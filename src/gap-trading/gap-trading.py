@@ -1,3 +1,4 @@
+# Inspired by part time Larry @ https://github.com/hackingthemarkets/gap-trading
 import datetime
 import pandas as pd
 import sys
