@@ -1,0 +1,4 @@
+pandas
+alpaca_trade_api
+lean
+QuantLib
