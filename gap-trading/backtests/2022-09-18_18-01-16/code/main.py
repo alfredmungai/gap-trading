@@ -41,7 +41,7 @@ class Gaptrading(QCAlgorithm):
 
         fineUniverse = [asset.Symbol for asset in coarseUniverse if asset.EarningReports.FileDate == yesterday and asset.MarketCap > 1e9]
 
-        # tickerSymbolValuesOnly = [symbol.Value for symbol in fineUniverse]
+        tickerSymbolValuesOnly = [symbol.Value for symbol in fineUniverse]
 
         return fineUniverse
 
@@ -68,10 +68,10 @@ class Gaptrading(QCAlgorithm):
             percentGap = priceGap / closeDayBeforeEarnings
             closeStrength = (closeDayAfterEarnings - openDayAfterEarnings) / (highDayAfterEarnings - openDayAfterEarnings)
 
-            if percentGap < 0.01:
-                self.Debug(f"{symbol.Value} gapped down by {percentGap} - {closeDayBeforeEarnings} {openDayAfterEarnings}")
+            if percentGap > 0.05:
+                self.Debug(f"{symbol.Value} gapped up by {percentGap} - {closeDayBeforeEarnings} {openDayAfterEarnings}")
 
-                # if closeDayAfterEarnings > closeDayBeforeEarnings and closeStrength > 0.5:
-                #     self.Debug(f"{symbol.Value} closed strong!")
-                # else:
-                #     self.Debug(f"{symbol.Value} faded after earnings")
+                if closeDayAfterEarnings > closeDayBeforeEarnings and closeStrength > 0.5:
+                    self.Debug(f"{symbol.Value} closed strong!")
+                else:
+                    self.Debug(f"{symbol.Value} faded after earnings")

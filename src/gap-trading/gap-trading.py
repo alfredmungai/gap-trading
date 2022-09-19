@@ -8,18 +8,25 @@ import config
 from alpaca_trade_api.rest import REST, TimeFrame, TimeFrameUnit
 
 # Get API keys
-api = REST(key_id = config.API_KEY, secret_key = config.SECRET_KEY, base_url = config.ENDPOINT)
+try:
+    api = REST(key_id=config.API_KEY, secret_key=config.SECRET_KEY, base_url=config.ENDPOINT)
+
+except:
+    print("REST didn't work")
 
 # Check to see if market is open
-if not api.get_clock().is_open:
-    sys.exit("Market is closed")
+# if not api.get_clock().is_open:
+#     sys.exit("Market is closed")
 
 # Create a dataframe of positions between 2 dates
-bars = api.get_bars(config.QQQ_SYMBOLS, TimeFrame.Day, config.START_DATE, config.TODAY).df
+try:
+    bars = api.get_bars(config.IWM_SYMBOLS, TimeFrame.Day, config.START_DATE, config.TODAY).df
+except:
+    print("get_bars didn't work")
 
 # Get previous close
 bars['previous_close'] = bars.groupby('symbol')['close'].shift(1)
-
+bars.head()
 # Calculate moving average
 bars['mv_avg'] = bars.groupby('symbol')['previous_close'].transform(lambda x: x.rolling(20, 20).mean())
 bars.dropna(inplace=True)
@@ -43,15 +50,24 @@ for symbol in market_order_symbols:
 
     try:
         order = api.submit_order(symbol, quantity, 'sell', 
-                                    order_class='bracket', 
-                                    take_profit={
-                                        'limit_price': take_profit
-                                    }, 
-                                    stop_loss={
-                                        'stop_price': stop_price, 
-                                        'limit_price': stop_limit_price
-                                    })
+                                    order_class='market') 
+                                    
 
         print(f'successfully submitted a bracket order with order_id {order.id}')
     except Exception as e:
         print(f'Error submitting above order {e}')
+
+    # try:
+    #     order = api.submit_order(symbol, quantity, 'sell', 
+    #                                 order_class='bracket', 
+    #                                 take_profit={
+    #                                     'limit_price': take_profit
+    #                                 }, 
+    #                                 stop_loss={
+    #                                     'stop_price': stop_price, 
+    #                                     'limit_price': stop_limit_price
+    #                                 })
+
+    #     print(f'successfully submitted a bracket order with order_id {order.id}')
+    # except Exception as e:
+    #     print(f'Error submitting above order {e}')
